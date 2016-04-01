@@ -35,11 +35,7 @@
     NSString *toBeString = textField.text;
     
     if (![self isInputRuleAndBlank:toBeString]) {
-        __block NSInteger emojiLength = 1;
-        [toBeString enumerateSubstringsInRange:NSMakeRange(0, toBeString.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop) {
-            emojiLength = substring.length;
-        }];
-        textField.text = [toBeString substringToIndex:toBeString.length - emojiLength];
+        textField.text = [self disable_emoji:toBeString];
         return;
     }
    
@@ -100,6 +96,14 @@
         return content;
     }
     return nil;
+}
+- (NSString *)disable_emoji:(NSString *)text{
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"[^\\u0020-\\u007E\\u00A0-\\u00BE\\u2E80-\\uA4CF\\uF900-\\uFAFF\\uFE30-\\uFE4F\\uFF00-\\uFFEF\\u0080-\\u009F\\u2000-\\u201f\r\n]"options:NSRegularExpressionCaseInsensitive error:nil];
+    NSString *modifiedString = [regex stringByReplacingMatchesInString:text
+                                                               options:0
+                                                                 range:NSMakeRange(0, [text length])
+                                                          withTemplate:@""];
+    return modifiedString;
 }
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     [self.view endEditing:YES];
